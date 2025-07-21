@@ -1,0 +1,33 @@
+{% with method=component %}
+{% include "docstring.cls.jinja" %}
+{% if method.is_classmethod %}ClassMethod {% else %}Method {% endif %}
+{{- method.format_name() }}{{ '(' -}}
+{% set sep = joiner(", ") %}
+{% for arg in method.arguments %}
+    {{- sep() -}}
+    {% if not arg.prefix is none %}{{ arg.prefix }} {% endif -%}
+    {{- arg.name }}{% if not arg.type is none %} As {{ arg.type }}{% endif -%}
+    {%- if not arg.value is none %}
+        {{- ' = ' -}}
+        {% if arg.value is string %}
+            {{- '"%s"'|format(arg.value) -}}
+        {% else %}
+            {{- arg.value -}}
+        {% endif %}
+    {% endif -%}
+{% endfor %}
+{{- ')' -}}
+{% if method.return_type %} As {{ method.return_type }}{% endif %}
+{% with keywords=method.keywords %}
+    {% include "keywords.cls.jinja" %}
+{% endwith +%}
+{
+{% if method.impl is string %}
+{{ method.impl }}
+{% else %}
+    {% for line in method.impl %}
+    {{ line }}
+    {% endfor %}
+{% endif %}
+}
+{% endwith %}

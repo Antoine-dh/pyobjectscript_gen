@@ -1,0 +1,13 @@
+{% with class=component %}
+{% include "docstring.cls.jinja" %}
+Class {{ class.format_name() }} {% if class.extends %}Extends ({{ ', '.join(class.extends) }}){% endif %}
+{% with keywords=class.keywords %}
+    {% include "keywords.cls.jinja" %}
+{% endwith +%}
+{
+
+{% for component in class.components %}
+    {% include component.get_template() +%}
+{% endfor %}
+}
+{% endwith %}

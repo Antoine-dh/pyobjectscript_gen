@@ -1,0 +1,8 @@
+{% if keywords %}
+    {% set sep = joiner(", ") %}
+    {{- ' [ ' -}}
+    {% for key, value in keywords.items() %}
+        {{- sep() }}{{ key }}{% if not value is none %} = {{ value }}{% endif -%}
+    {% endfor %}
+    {{- ' ]' -}}
+{% endif %}

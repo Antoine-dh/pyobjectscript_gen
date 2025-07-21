@@ -1,0 +1,15 @@
+{% with param=component %}
+{% include "docstring.cls.jinja" %}
+Parameter {{ param.format_name() }}{% if not param.type is none %} As {{ param.type }}{% endif %}
+    {% with keywords=param.keywords %}
+        {% include "keywords.cls.jinja" %}
+    {% endwith %}
+    {% if not param.value is none %}
+        {{- ' = ' -}}
+        {% if param.value is string %}
+            {{- '"%s"'|format(param.value) -}}
+        {% else %}
+            {{- param.value -}}
+        {% endif %}
+    {%- endif %};
+{% endwith %}

@@ -1,0 +1,7 @@
+{% with param=component %}
+{% include "docstring.cls.jinja" %}
+Index {{ param.format_name() }} On {{ param.on }}{% if not param.alias is none %} As {{ param.alias }}{% endif %}
+    {% with keywords=param.keywords %}
+        {% include "keywords.cls.jinja" %}
+    {% endwith %}
+{% endwith %}

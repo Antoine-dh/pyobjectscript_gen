@@ -1,0 +1,21 @@
+{% with prop=component %}
+{% include "docstring.cls.jinja" %}
+Property {{ prop.format_name() }}{% if not prop.type is none %} As{% if not prop.collection is none %} {{ prop.collection }} of{% endif %} {{ prop.type -}}
+    {% if prop.params %}
+        {{- '(' -}}
+        {% set sep = joiner(", ") %}
+        {% for key, value in prop.params.items() %}
+            {{- sep() -}}
+            {% if value is string %}
+                {{- '%s="%s"'|format(key, value) -}}
+            {% else %}
+                {{- '%s=%s'|format(key, value) -}}
+            {% endif %}
+        {% endfor %}
+        {{- ')' -}}
+    {% endif %}
+{% endif %}
+{% with keywords=prop.keywords %}
+    {% include "keywords.cls.jinja" %}
+{% endwith %};
+{% endwith %}

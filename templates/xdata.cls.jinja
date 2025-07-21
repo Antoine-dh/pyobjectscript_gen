@@ -1,0 +1,10 @@
+{% with xdata=component %}
+{% include "docstring.cls.jinja" %}
+XData {{ xdata.format_name() -}}
+{% with keywords=xdata.keywords %}
+    {% include "keywords.cls.jinja" %}
+{% endwith +%}
+{
+{{ xdata.content }}
+}
+{% endwith %}

@@ -1,0 +1,10 @@
+{% with storage=component %}
+{% include "docstring.cls.jinja" %}
+Storage {{ storage.format_name() -}}
+{% with keywords=storage.keywords %}
+    {% include "keywords.cls.jinja" %}
+{% endwith +%}
+{
+{{ storage.definition }}
+}
+{% endwith %}

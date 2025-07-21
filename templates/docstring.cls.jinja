@@ -1,0 +1,9 @@
+{% if component.doc_string %}
+    {% if component.doc_string is string %}
+        {{- '/// '}}{{ component.doc_string }}
+    {% elif component.doc_string is iterable %}
+        {% for line in component.doc_string %}
+            {{- '/// '}}{{ line }}
+        {% endfor %}
+    {% endif %}
+{% endif %}
