@@ -5,6 +5,12 @@ Storage {{ storage.format_name() -}}
     {% include "keywords.cls.jinja" %}
 {% endwith +%}
 {
+{% if storage.definition is string %}
 {{ storage.definition }}
+{% else %}
+    {% for line in storage.definition %}
+    {{ line }}
+    {% endfor %}
+{% endif %}
 }
 {% endwith %}

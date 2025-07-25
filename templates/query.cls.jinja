@@ -1,0 +1,32 @@
+{% with query=component %}
+{% include "docstring.cls.jinja" %}
+Query {{ query.format_name() }}{{ '(' -}}
+{% set sep = joiner(", ") %}
+{% for arg in query.arguments %}
+    {{- sep() -}}
+    {% if not arg.prefix is none %}{{ arg.prefix }} {% endif -%}
+    {{- arg.name }}{% if not arg.type is none %} As {{ arg.type }}{% endif -%}
+    {%- if not arg.value is none %}
+        {{- ' = ' -}}
+        {% if arg.value is string %}
+            {{- '"%s"'|format(arg.value) -}}
+        {% else %}
+            {{- arg.value -}}
+        {% endif %}
+    {% endif -%}
+{% endfor %}
+{{- ')' -}}
+{% if query.return_type %} As {{ query.return_type }}{% endif %}
+{% with keywords=query.keywords %}
+    {% include "keywords.cls.jinja" %}
+{% endwith +%}
+{
+{% if query.impl is string %}
+{{ query.impl }}
+{% else %}
+    {% for line in query.impl %}
+    {{ line }}
+    {% endfor %}
+{% endif %}
+}
+{% endwith %}

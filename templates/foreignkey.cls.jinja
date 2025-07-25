@@ -1,0 +1,9 @@
+{% with foreignkey=component %}
+{% include "docstring.cls.jinja" %}
+ForeignKey {{ foreignkey.format_name() -}}
+({{ ", ".join(foreignkey.key_props) }}) References {{ foreignkey.referenced_class -}}
+({% if not foreignkey.ref_index is none %}{{ foreignkey.ref_index }}{% endif %})
+    {%- with keywords=foreignkey.keywords %}
+        {% include "keywords.cls.jinja" %}
+    {% endwith %};
+{% endwith %}

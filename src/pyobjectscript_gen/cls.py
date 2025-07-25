@@ -49,7 +49,7 @@ class Component:
 
     def get_template(self) -> str:
         """
-        Returns the name of the Jinja2 template to use for this component
+        Returns the name of the Jinja2 template used by component
         """
         pass
 
@@ -94,9 +94,9 @@ class XData(Component):
     ```
     """
 
-    content: str
+    content: str | list[str]
     """
-    Content of XData, can be data of any arbitrary format, as string.
+    Content of XData, can be data of any arbitrary format, as string or list of string.
     
     Specify Mime type with `keywords={"MimeType": type}`.
     """
@@ -141,9 +141,9 @@ class Storage(Component):
     "Default" for Storage components by default
     """
 
-    definition: str = ""
+    definition: str | list[str] = ""
     """
-    XML storage definition as string
+    XML storage definition as string or list of string.
 
     XML storage definition syntax is not supported by this library and should be used in conjunction with a XML library.
     """
@@ -174,6 +174,56 @@ class Storage(Component):
     def get_template(self) -> str:
         return "storage.cls.jinja"
 
+
+@dataclass
+class Trigger(Component):
+    """
+    [Syntax of Triggers in Class Definitions](https://docs.intersystems.com/irislatest/csp/docbook/Doc.View.cls?KEY=ROBJ_trigger_syntax)
+
+    ```
+    Trigger Name [ Keywords ]  
+    { 
+        Implementation
+    }
+    ```
+    """
+
+    impl: str | list[str] = field(default_factory=list)
+    """
+    Trigger implementation
+    
+    Can be a simple string for already indented and newline delimited code, or for use with `CodeMode = expression`
+    or a list of strings for multiline code, in which case will be indented automatically by the generator.
+
+    Objectscript routine code generation and syntax validation is not supported by this library.
+    """
+
+    keywords: dict[str, Any] = field(default_factory=dict, kw_only=True)
+    """
+    [Trigger Syntax and Keywords](https://docs.intersystems.com/irislatest/csp/docbook/Doc.View.cls?KEY=ROBJ_trigger)
+
+    Optional dict used to specify keywords for this component.
+    
+    Use `{"Keyword": None}` for keywords that do not have a value.
+
+    ### Valid Trigger keywords
+    - CodeMode – Specifies how this trigger is implemented.
+    - Event – Specifies the SQL events that will fire this trigger. Required (no default).
+    - Final – Specifies whether this trigger is final (cannot be overridden in subclasses).
+    - Foreach – Controls when the trigger is fired.
+    - Internal – Specifies whether this trigger definition is internal (not displayed in the class documentation).
+    - Language – Specifies the language in which the trigger is written.
+    - NewTable – Specifies the name of the transition table that stores the new values of the row or statement affected by the event for this trigger.
+    - OldTable – Specifies the name of the transition table that stores the old values of the row or statement affected by the event for this trigger.
+    - Order – In the case of multiple triggers for the same EVENT and TIME, specifies the order in which the triggers should be fired.
+    - SqlName – Specifies the SQL name to use for this trigger.
+    - Time – Specifies whether the trigger is fired before or after the event.
+    - UpdateColumnList – Specifies one or more columns whose modification causes the trigger to be fired by SQL. Available only for TSQL.
+    """
+
+    def get_template(self) -> str:
+        return "trigger.cls.jinja"
+    
 
 @dataclass
 class Parameter(Component):
@@ -314,8 +364,158 @@ class Property(Component):
 class Index(Component):
     """
     [Defining Indexes Using a Class Definition](https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=GSOD_indexes#GSOD_indexes_def_cls)
-    TODO
+    
+    ```
+    INDEX Name ON Property AS Collation [ Keywords ];
+    ```
+
+    Note: Complex indexes using expressions or multiple properties are not implemented yet by this library.
+
+    A workaround for this is to specify `property` with the full desired expression and leave `collation` empty, such as:
+
+    ```
+    index.property = Expression("(Name As SQLstring, Code As Exact)")
+    ```
     """
+
+    property: str
+    """
+    Name of the property to index
+    """
+
+    collation: str
+    """
+    [Collation Types](https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=GSQL_collation#GSQL_collation_types)
+    """
+
+    keywords: dict[str, Any] = field(default_factory=dict, kw_only=True)
+    """
+    [Index Syntax and Keywords](https://docs.intersystems.com/irislatest/csp/docbook/Doc.View.cls?KEY=ROBJ_index)
+
+    Optional dict used to specify keywords for this component.
+
+    Use `{"Keyword": None}` for keywords that do not have a value
+    
+    ### Valid Foreign Key keywords
+    - Abstract – Specifies that an index is abstract.
+    - Condition – Defines a conditional index and specifies the condition that must be met for a record to be included in the index.
+    - CoshardWith – Adds an index that specifies the name of the class with which this class is cosharded.
+    - Data – Specifies a list of properties whose values are to be stored within this index.
+    - Deferred – Defines a deferred index.
+    - Extent – Defines an extent index.
+    - IdKey – Specifies whether this index defines the Object Identity values for the table.
+    - Internal – Specifies whether this index definition is internal (not displayed in the class documentation).
+    - PrimaryKey – Specifies whether this index defines the primary key for the table.
+    - ShardKey – Defines an index that specifies the shard key for this class.
+    - SqlName – Specifies an SQL alias for the index.
+    - Type – Specifies the type of index.
+    - Unique – Specifies whether the index should enforce uniqueness.
+    """
+
+    def get_template(self) -> str:
+        return "index.cls.jinja"
+
+
+@dataclass
+class ForeignKey(Component):
+    """
+    [Syntax of Foreign Keys in Class Definitions](https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=ROBJ_foreignkey_syntax)
+    
+    ```
+    ForeignKey name(key_props) References referenced_class(ref_index) [ Keywords ];
+     ```
+    """
+
+    referenced_class: str
+    """
+    Required property, specifies the foreign table (that is, the class to which the foreign key points).
+    """
+
+    key_props: list[str] = field(default_factory=list)
+    """
+    Specifies the property or properties that are constrained by this foreign key.
+
+    Specifically this property or properties must match the referenced value in the foreign table.
+
+    At least one property required.
+    """
+
+    ref_index: str = None
+    """
+    Optional property which specifies the unique index name within `referenced_class`.
+
+    If you omit `ref_index`, then the system uses the `IDKEY` index in `referenced_class`.
+    """
+
+    keywords: dict[str, Any] = field(default_factory=dict, kw_only=True)
+    """
+    [Foreign Key Syntax and Keywords](https://docs.intersystems.com/irislatest/csp/docbook/Doc.View.cls?KEY=ROBJ_foreignkey)
+
+    Optional dict used to specify keywords for this component.
+
+    Use `{"Keyword": None}` for keywords that do not have a value
+
+    ### Valid Foreign Key keywords
+    - Internal – Specifies whether this foreign key definition is internal (not displayed in the class documentation).
+    - NoCheck – Specifies whether InterSystems IRIS should check this foreign key constraint.
+    - OnDelete – Specifies the action that this foreign key should cause in the current table when a record deleted in the foreign table is referenced by a record in the current table.
+    - OnUpdate – Specifies the action that this foreign key should cause in the current table when the key value of a record in the foreign table is updated and that record is referenced by a record in the current table.
+    - SqlName – Specifies an SQL alias for the foreign key.
+    """ 
+
+    def get_template(self) -> str:
+        return "foreignkey.cls.jinja"
+    
+
+@dataclass
+class Projection(Component):
+    """
+    [Defining Class Projections](https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=GOBJ_projections)
+    
+    ```
+    Projection name As projection_class(PARAM1="value", ...) [ Keywords ];
+     ```
+    """
+
+    projection_class: str
+    """
+    Required property, specifies the name of the projection class, which is a subclass of `%Projection.AbstractProjection`.
+    """
+
+    params: dict[str, Any] = field(default_factory=dict)
+    """
+    [Property Parameters](https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=GOBJ_propparams)
+    
+    Optional dict used to specify Property Parameters for the `projection_class`
+
+    ### Example
+
+    ```
+    Projection(
+        name="MyProj", 
+        projection_class="%Projection.Java",
+        params={
+            "ROOTDIR": "c:\\java",
+        },
+    ),
+    ```
+    """
+
+    keywords: dict[str, Any] = field(default_factory=dict, kw_only=True)
+    """
+    [Projection Syntax and Keywords](https://docs.intersystems.com/irislatest/csp/docbook/Doc.View.cls?KEY=ROBJ_projection)
+
+    Optional dict used to specify keywords for this component.
+
+    Use `{"Keyword": None}` for keywords that do not have a value
+
+    ### Valid Projection keywords
+    - Internal – Specifies whether this projection definition is internal (not displayed in the class documentation).
+    Note that the class documentation does not currently display projections at all.
+    """ 
+
+    def get_template(self) -> str:
+        return "projection.cls.jinja"
 
 
 @dataclass
@@ -323,7 +523,7 @@ class MethodArgument:
     """
     [Specifying Method Arguments](https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=GOBJ_methods#GOBJ_methods_arguments)
 
-    Used to specify method arguments in the Method component
+    Used to specify method arguments in the `Method` or `Query` component
     """
 
     name: str
@@ -468,12 +668,96 @@ class ClassMethod(Method):
 
 
 @dataclass
+class Query(Component):
+    """
+    [Defining and Using Class Queries](https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=GOBJ_queries)
+
+    ```
+    Query Name(Arguments...) as %SQLQuery [ Keywords ]
+    {
+        Implementation
+    }
+    ```
+    """
+
+    arguments: list[MethodArgument] = field(default_factory=list)
+    """
+    List of `MethodArgument`
+
+    ### Usage example
+
+    ```
+    query.arguments = [
+        MethodArgument(
+            "foo",
+            type="%String",
+            value=""
+        ),
+        MethodArgument(
+            "bar",
+            type="%Integer",
+            value=1
+        ),
+    ]
+    ```
+    """
+    
+    return_type: str = "%SQLQuery"
+    """
+    Class name used as return type
+
+    Should be %SQLQuery in most cases
+    """
+
+    impl: str | list[str] = field(default_factory=list)
+    """
+    Query implementation
+    
+    Can be a simple string for already indented and newline delimited code, or for use with `CodeMode = expression`
+    or a list of strings for multiline code, in which case will be indented automatically by the generator.
+
+    SQL query generation and syntax validation is not supported by this library.
+    """
+
+    keywords: dict[str, Any] = field(default_factory=lambda: {"SqlProc": None})
+    """
+    [Query Syntax and Keywords](https://docs.intersystems.com/irislatest/csp/docbook/Doc.View.cls?KEY=ROBJ_query)
+
+    Optional dict used to specify keywords for this component.
+
+    `SqlProc` is enabled by default for Queries
+
+    Use `{"Keyword": None}` for keywords that do not have a value
+
+    ### Valid Query keywords
+    - ClientName – An alias used by client projections of this query.
+    - Final – Specifies whether this query is final (cannot be overridden in subclasses).
+    - Internal – Specifies whether this query definition is internal (not displayed in the class documentation).
+    - Private – Specifies whether the query is private.
+    - Requires – Specifies a list of privileges a user or process must have to call this query.
+    - SoapBindingStyle – Specifies the binding style or SOAP invocation mechanism used by this query, when it is used as a web method. Applies only in a class that is defined as a web service or web client.
+    - SoapBodyUse – Specifies the encoding used by the inputs and outputs of this query, when it is used as a web method. Applies only in a class that is defined as a web service or web client.
+    - SoapNameSpace – Specifies the namespace at the binding operation level in the WSDL for this query. Applies only in a class that is defined as a web service or web client.
+    - SqlName – Overrides the default name of the projected SQL stored procedure. Applies only if this query is projected as an SQL stored procedure.
+    - SqlProc – Specifies whether the query can be invoked as an SQL stored procedure.
+    - SqlView – Specifies whether to project this query as an SQL view.
+    - SqlViewName – Overrides the default name of the projected SQL view. Applies only if this query is projected as an SQL view.
+    - WebMethod – Specifies whether this query is a web method. Applies only in a class that is defined as a web service or web client.
+    """
+
+    def get_template(self) -> str:
+        return "query.cls.jinja"
+
+
+@dataclass
 class Class(Component):
     """
     [Defining Classes](https://docs.intersystems.com/irislatest/csp/docbook/Doc.View.cls?KEY=GOBJ_classes)
 
     ### Example usage
     ```
+    from pyobjectscript_gen.cls import *
+
     cls = Class("Demo.MyExample.MyClass)
     cls.extends = ["%RegisteredObject"]
     # example of declaratively creating properties
@@ -535,6 +819,9 @@ class Class(Component):
     - Method
     - ClassMethod
     - Query
+    - Trigger
+    - Projection
+    - ForeignKey
     - Index
     - XData
     - Storage
@@ -592,7 +879,7 @@ class Class(Component):
         elif self.keywords["GeneratedBy"] is None:
             self.keywords.pop("GeneratedBy")
         if self.doc_string is not None and len(self.doc_string) == 0:
-            self.doc_string = f"Class generated on {datetime.now().isoformat(sep=" ", timespec="seconds")}"
+            self.doc_string = [f"Class generated on {datetime.now().isoformat(sep=" ", timespec="seconds")}"]
         return super().on_generate()
 
     def get_template(self) -> str:

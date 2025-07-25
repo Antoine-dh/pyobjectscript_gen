@@ -1,0 +1,20 @@
+{% with projection=component %}
+{% include "docstring.cls.jinja" %}
+Projection {{ projection.format_name() }} As {{ projection.projection_class -}}
+{% if projection.params %}
+    {{- '(' -}}
+    {% set sep = joiner(", ") %}
+    {% for key, value in projection.params.items() %}
+        {{- sep() -}}
+        {% if value is string %}
+            {{- '%s="%s"'|format(key, value) -}}
+        {% else %}
+            {{- '%s=%s'|format(key, value) -}}
+        {% endif %}
+    {% endfor %}
+    {{- ')' -}}
+{% endif %}
+{%- with keywords=projection.keywords %}
+    {% include "keywords.cls.jinja" %}
+{% endwith %};
+{% endwith %}

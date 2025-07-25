@@ -1,7 +1,7 @@
-{% with param=component %}
+{% with index=component %}
 {% include "docstring.cls.jinja" %}
-Index {{ param.format_name() }} On {{ param.on }}{% if not param.alias is none %} As {{ param.alias }}{% endif %}
-    {% with keywords=param.keywords %}
-        {% include "keywords.cls.jinja" %}
-    {% endwith %}
+Index {{ index.format_name() }} On {{ index.property }}{% if not index.collation is none %} As {{ index.collation }}{% endif %}
+{% with keywords=index.keywords %}
+    {% include "keywords.cls.jinja" %}
+{% endwith %};
 {% endwith %}

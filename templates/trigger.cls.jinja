@@ -1,0 +1,16 @@
+{% with trigger=component %}
+{% include "docstring.cls.jinja" %}
+Trigger {{ trigger.format_name() -}}
+{% with keywords=trigger.keywords %}
+    {% include "keywords.cls.jinja" %}
+{% endwith +%}
+{
+{% if trigger.impl is string %}
+{{ trigger.impl }}
+{% else %}
+    {% for line in trigger.impl %}
+    {{ line }}
+    {% endfor %}
+{% endif %}
+}
+{% endwith %}

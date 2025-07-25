@@ -5,6 +5,12 @@ XData {{ xdata.format_name() -}}
     {% include "keywords.cls.jinja" %}
 {% endwith +%}
 {
+{% if xdata.content is string %}
 {{ xdata.content }}
+{% else %}
+    {% for line in xdata.content %}
+    {{ line }}
+    {% endfor %}
+{% endif %}
 }
 {% endwith %}
