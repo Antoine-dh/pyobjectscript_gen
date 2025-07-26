@@ -149,4 +149,5 @@ if __name__ == "__main__":
         with open(sys.argv[1], 'w') as file:
             cls.generate(file)
     else:
+        # generate on sys.stdout
         cls.generate()

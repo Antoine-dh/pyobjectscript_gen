@@ -608,7 +608,7 @@ class Method(Component):
     Objectscript routine code generation and syntax validation is not supported by this library.
     """
 
-    keywords: dict[str, Any] = field(default_factory=dict)
+    keywords: dict[str, Any] = field(default_factory=dict, kw_only=True)
     """
     [Method Syntax and Keywords](https://docs.intersystems.com/irislatest/csp/docbook/Doc.View.cls?KEY=ROBJ_method)
 
@@ -719,7 +719,7 @@ class Query(Component):
     SQL query generation and syntax validation is not supported by this library.
     """
 
-    keywords: dict[str, Any] = field(default_factory=lambda: {"SqlProc": None})
+    keywords: dict[str, Any] = field(default_factory=lambda: {"SqlProc": None}, kw_only=True)
     """
     [Query Syntax and Keywords](https://docs.intersystems.com/irislatest/csp/docbook/Doc.View.cls?KEY=ROBJ_query)
 
@@ -758,7 +758,7 @@ class Class(Component):
     ```
     from pyobjectscript_gen.cls import *
 
-    cls = Class("Demo.MyExample.MyClass)
+    cls = Class("Demo.MyExample.MyClass")
     cls.extends = ["%RegisteredObject"]
     # example of declaratively creating properties
     cls.components = [
@@ -832,7 +832,7 @@ class Class(Component):
     """
 
 
-    keywords: dict[str, Any] = field(default_factory=dict)
+    keywords: dict[str, Any] = field(default_factory=dict, kw_only=True)
     """
     [Top Level Class Syntax and Keywords](https://docs.intersystems.com/irislatest/csp/docbook/Doc.View.cls?KEY=ROBJ_parameter)
     
@@ -896,3 +896,22 @@ class Class(Component):
             component.on_generate()
         self.on_generate()
         output.write(template.render(component=self))
+
+
+__all__ = list(map(lambda e: e.__name__, [
+    Class,
+    Property,
+    Parameter,
+    Method,
+    ClassMethod,
+    Query,
+    Index,
+    ForeignKey,
+    Projection,
+    MethodArgument,
+    Trigger,
+    Storage,
+    XData,
+    Expression,
+    Component
+]))
