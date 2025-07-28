@@ -14,7 +14,7 @@ Objectscript class code generation library for Python
 
 ## Installation
 
-You can install the package using pip (COMING SOON):
+You can install the package using pip:
 
 ```shell
 pip install pyobjectscript_gen
@@ -81,15 +81,13 @@ See the generated class in `examples/generated/basic.cls`
 
 ## Documentation
 
-You can find the full documentation at: [Read the docs coming soon...]()
+You can find the full documentation at: [Read the docs](https://pyobjectscript-gen.readthedocs.io/en/latest/)
 
-All the documentation can be found in code with python docstrings in `src/pyobjectscript_gen/cls.py`
+All the documentation can also be found in code with python docstrings in `src/pyobjectscript_gen/cls.py`
 
 ---
 
 ## Running Examples
-
-### Features
 
 All examples code can be found in `examples/` and their respective output classes in `examples/generated/`
 
@@ -122,12 +120,6 @@ python -m venv .venv
 source .venv/bin/activate  # On Windows, use .venv\bin\activate.bat
 pip install -r requirements.txt
 ```
-
----
-
-## Known Issues
-
-- Templates are not properly embedded in the python package and not resolved dynamically, python scripts must be run from the root directory of this project
 
 ---
 

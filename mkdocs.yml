@@ -1,0 +1,34 @@
+site_name: PyObjectscript Gen Documentation
+nav:
+- Index: index.md
+- API Reference:
+  - Class: cls/class.md
+  - Component: cls/component.md
+  - Parameter: cls/parameter.md
+  - Property: cls/property.md
+  - Method: cls/method.md
+  - ClassMethod: cls/classmethod.md
+  - Projection: cls/projection.md
+  - Query: cls/query.md
+  - Trigger: cls/trigger.md
+  - Index: cls/index.md
+  - ForeignKey: cls/foreignkey.md
+  - Storage: cls/storage.md
+  - XData: cls/xdata.md
+  - Expression: cls/expression.md
+  - MethodArgument: cls/methodargument.md
+theme:
+  name: material
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            backlinks: tree
+            show_source: false
+            show_labels: false
+            docstring_section_style: table
+            merge_init_into_class: true
