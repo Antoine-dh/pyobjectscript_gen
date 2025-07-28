@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any, TextIO
 from datetime import datetime
+from pathlib import Path
 import jinja2
 import sys
 
@@ -24,8 +25,9 @@ class Component:
     
     keywords: dict[str, Any] = field(default_factory=dict, kw_only=True)
     """
-    ### Compiler keywords
-    see: https://docs.intersystems.com/irislatest/csp/docbook/Doc.View.cls?KEY=GOBJ_classes#GOBJ_classes_keywords
+    Compiler keywords
+    
+    see: [Introduction to Compiler Keywords](https://docs.intersystems.com/irislatest/csp/docbook/Doc.View.cls?KEY=GOBJ_classes#GOBJ_classes_keywords)
     
     Optional dict used to specify keywords for this component.
 
@@ -523,7 +525,7 @@ class MethodArgument:
     """
     [Specifying Method Arguments](https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=GOBJ_methods#GOBJ_methods_arguments)
 
-    Used to specify method arguments in the `Method` or `Query` component
+    Used to specify method arguments in the `Method` or `Query` component.
     """
 
     name: str
@@ -706,7 +708,7 @@ class Query(Component):
     """
     Class name used as return type
 
-    Should be %SQLQuery in most cases
+    Should be `%SQLQuery` in most cases
     """
 
     impl: str | list[str] = field(default_factory=list)
@@ -716,7 +718,8 @@ class Query(Component):
     Can be a simple string for already indented and newline delimited code, or for use with `CodeMode = expression`
     or a list of strings for multiline code, in which case will be indented automatically by the generator.
 
-    SQL query generation and syntax validation is not supported by this library.
+    Note:
+        SQL query generation and syntax validation is not supported by this library.
     """
 
     keywords: dict[str, Any] = field(default_factory=lambda: {"SqlProc": None}, kw_only=True)
@@ -814,21 +817,22 @@ class Class(Component):
     List of Objectscript components to be generated in ascending order from top to bottom inside this `Class`
 
     Components can be any of the following classes:
-    - Parameter
-    - Property
-    - Method
-    - ClassMethod
-    - Query
-    - Trigger
-    - Projection
-    - ForeignKey
-    - Index
-    - XData
-    - Storage
 
-    Note that `Class` itself is also a `Component` but cannot be generated inside another `Class`.
+    - [Parameter][]
+    - [Property][]
+    - [Method][]
+    - [ClassMethod][]
+    - [Query][]
+    - [Trigger][]
+    - [Projection][]
+    - [ForeignKey][]
+    - [Index][]
+    - [XData][]
+    - [Storage][]
 
-    Base class `Component` should not be used directly.
+    Note:
+        - [Class][] itself is also a [Component][] but cannot be generated inside another [Class][].
+        - Base class [Component][] should not be used directly.
     """
 
 
@@ -873,6 +877,14 @@ class Class(Component):
     - ViewQuery – Specifies the SQL query for this class. Applies only to view definition classes.
     """
 
+    _TEMPLATE_DIR = Path(__file__).parent / 'templates/'
+
+    _JINJA_ENV = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(_TEMPLATE_DIR),
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+
     def on_generate(self):
         if not "GeneratedBy" in self.keywords:
             self.keywords["GeneratedBy"] = "pyobjectscript_gen"
@@ -886,11 +898,18 @@ class Class(Component):
         return "class.cls.jinja"
     
     def generate(self, output: TextIO = sys.stdout):
-        env = jinja2.Environment(
-            loader=jinja2.FileSystemLoader("./templates/"),
-            trim_blocks=True,
-            lstrip_blocks=True,
-        )
+        """
+        Generates the current class to the specified IO or file (defaults to standard output)
+
+        Example usage:
+        ```
+        # generates class into a file, make sure to add "w" for write permissions
+        with open("output.cls", "w") as file:
+            cls.generate(file)
+        ```
+        """
+
+        env = self._JINJA_ENV
         template = env.get_template("class.cls.jinja")
         for component in self.components:
             component.on_generate()
