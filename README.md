@@ -34,7 +34,7 @@ pip install .
 Here's a basic example of how to use the library:
 
 ```python
-from pyobjectscript_gen import *
+from pyobjectscript_gen.cls import *
 
 cls = Class(
     name="Demo.MyExample.MyClass",
