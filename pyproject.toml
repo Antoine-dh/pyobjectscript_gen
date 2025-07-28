@@ -28,7 +28,7 @@ classifiers = [
 ]
 
 [project.urls]
-Documentation = "https://readthedocs.org"
+Documentation = "https://pyobjectscript-gen.readthedocs.io/en/latest/"
 Repository = "https://github.com/Antoine-dh/pyobjectscript_gen.git"
 "Bug Tracker" = "https://github.com/Antoine-dh/pyobjectscript_gen/issues"
 Changelog = "https://github.com/Antoine-dh/pyobjectscript_gen/blob/master/CHANGELOG.md"
