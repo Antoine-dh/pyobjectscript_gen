@@ -4,4 +4,4 @@ API
 .. autosummary::
    :toctree: generated
 
-    pyobjectscript_gen
+    pyobjectscript_gen.cls

@@ -11,3 +11,4 @@ PyObjectscript Gen documentation
    :caption: Contents:
 
    api
+   cls
