@@ -1,4 +1,4 @@
-/// Class generated on 2025-07-26 17:54:43
+/// Class generated on 2025-08-01 18:45:28
 Class REST.Messages.AddPetRequest Extends (%Persistent, Ens.Request, %JSON.Adaptor) [ GeneratedBy = pyobjectscript_gen ]
 {
 

@@ -91,7 +91,7 @@ class RestBusinessOperation(Class):
     """
     Custom REST BusinessOperation using custom extends
     """
-    extends = ["Ens.BusinessOperation", "REST.HttpMethods"]
+    extends = ["Ens.BusinessOperation"]
 
     def __init__(self, name: str, routes: list[Route], extends: list[str] = None, **kwargs):
         super().__init__(
@@ -99,7 +99,22 @@ class RestBusinessOperation(Class):
             extends=self.extends + (extends if extends else []),
             **kwargs
         )
-        self.components = [*self.components, *routes]
+        # could be inherited methods from a specialized class, but insert them here for demonstration sake
+        http_methods = [
+            Method(
+                name=method.capitalize(),
+                arguments=[
+                    MethodArgument("pRequest"),
+                    MethodArgument("pResponse", prefix="Output"),
+                ],
+                return_type="%Status",
+                impl=[
+                    f'$$$TRACE("Sending {method} request...")',
+                    "Quit $$$OK"
+                ],
+            ) for method in ["GET", "POST", "DELETE", "PATCH"]
+        ]
+        self.components = [*http_methods, *self.components, *routes]
         self.components.append(XData("MessageMap", content=self.get_message_map()))
 
     @staticmethod
