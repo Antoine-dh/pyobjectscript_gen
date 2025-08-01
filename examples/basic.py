@@ -2,7 +2,7 @@ from pyobjectscript_gen.cls import *
 import sys
 
 if __name__=="__main__":
-    cls = Class("Demo.MyExample.MyClass")
+    cls = Class("dc.Demo.Basic")
     cls.extends = ["%RegisteredObject"]
 
     # example of declaratively creating properties

@@ -3,7 +3,7 @@ import sys
 
 if __name__ == "__main__":
     cls = Class(
-        "cls.Features",
+        "dc.Demo.Features",
         extends=["%Persistent", "%XML.Adaptor"],
         components=[
             Parameter(

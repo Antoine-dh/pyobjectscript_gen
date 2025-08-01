@@ -2,6 +2,8 @@ from pyobjectscript_gen.cls import *
 from dataclasses import dataclass, field
 import xml.dom.minidom as DOM
 
+PACKAGE = "dc.Demo.REST"
+
 @dataclass
 class RequestClass(Class):
     extends = ["%Persistent", "Ens.Request"]
@@ -140,7 +142,7 @@ class RestBusinessOperation(Class):
 if __name__ == "__main__":
     import sys
 
-    req = RequestClass("REST.Messages.AddPetRequest",
+    req = RequestClass(f"{PACKAGE}.Messages.AddPetRequest",
         extends=["%JSON.Adaptor"],
         properties=[
             Property("status", "%String"),
@@ -158,7 +160,7 @@ if __name__ == "__main__":
         ]
     )
 
-    resp = ResponseClass("REST.Messages.AddPetResponse",
+    resp = ResponseClass(f"{PACKAGE}.Messages.AddPetResponse",
         extends=["%JSON.Adaptor"],
         components=[
             Property("status", "%String"),
@@ -166,7 +168,7 @@ if __name__ == "__main__":
     )
 
     bo = RestBusinessOperation(
-        "REST.BusinessOperation",
+        f"{PACKAGE}.BusinessOperation",
         [
             Route("AddPet", req.name, resp.name, "POST", "/pet"),
             # Route("DeletePet", "Test.DeletePetRequest", "Ens.Response", "DELETE", "/pet"),
