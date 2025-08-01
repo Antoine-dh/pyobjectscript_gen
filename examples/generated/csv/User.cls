@@ -1,4 +1,4 @@
-/// Class generated on 2025-08-01 19:45:05
+/// Class generated on 2025-08-01 20:16:10
 Class Demo.CSV.User Extends (%Persistent) [ GeneratedBy = pyobjectscript_gen ]
 {
 

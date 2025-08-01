@@ -6,12 +6,12 @@ OUTPUT_DIR = "examples/generated/csv/"
 
 PACKAGE = "Demo.CSV"
 
-# generic type name map to Objectscript specialized types for example
+# ORM type name map to Objectscript specialized types for example
 TYPE_MAP = {
-    "Integer": "%Integer",
-    "String": "%String",
-    "Numeric": "%Numeric",
-    "Boolean": "%Boolean"
+    "integer": "%Integer",
+    "text": "%String",
+    "decimal": "%Numeric",
+    "boolean": "%Boolean"
 }
 
 if __name__=="__main__":
